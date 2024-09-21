@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management</title>
+    <link rel="stylesheet" href="style.css"> <!-- ลิงก์ไปยังไฟล์ CSS -->
+</head>
+<body>
+    <div class="container">
+        <h1>Student Management</h1>
+        <form id="studentForm">
+            <input type="text" id="studentCode" placeholder="Student Code" required>
+            <input type="text" id="firstName" placeholder="First Name" required>
+            <input type="text" id="lastName" placeholder="Last Name" required>
+            <input type="text" id="telNumber" placeholder="Telephone Number" required>
+            <button type="submit">Add Student</button>
+        </form>
+
+        <h2>Student List</h2>
+        <ul id="studentList"></ul>
+    </div>
+
+    <script>
+        const form = document.getElementById('studentForm');
+        const studentList = document.getElementById('studentList');
+
+        async function fetchStudents() {
+            const response = await fetch('/api/students');
+            const students = await response.json();
+            studentList.innerHTML = '';
+            students.forEach(student => {
+                const li = document.createElement('li');
+                li.textContent = `${student.studentCode} - ${student.firstName} ${student.lastName} (${student.telNumber})`;
+                studentList.appendChild(li);
+            });
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newStudent = {
+                studentCode: form.studentCode.value,
+                firstName: form.firstName.value,
+                lastName: form.lastName.value,
+                telNumber: form.telNumber.value,
+            };
+
+            await fetch('/api/students', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newStudent),
+            });
+            form.reset();
+            fetchStudents();
+        });
+
+        fetchStudents(); // Initial fetch to load students
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,37 @@
+services:
+  express:
+    build:
+      context: ./express
+    networks:
+      - jira-network
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/mydatabase
+
+  nginx:
+    image: nginx
+    networks:
+      - jira-network
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+
+  mongodb:
+    image: mongo
+    networks:
+      - jira-network
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+networks:
+  jira-network:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+
+
